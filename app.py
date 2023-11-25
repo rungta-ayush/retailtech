@@ -108,4 +108,4 @@ def find_price_difference(df, csv_path):
     return df1,sum
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=5000)
