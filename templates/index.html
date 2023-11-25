@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Prices</title>
+    <!-- Add a modern font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        #uploadSection {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stylish Logo */
+        #logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+        }
+
+        /* Animation for Result */
+        .result-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .result-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Styling for Loss */
+        .total-loss {
+            color: red;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Panda_Retail_Company_Logo.svg/220px-Panda_Retail_Company_Logo.svg.png" alt="Shop Retail Rise Logo" id="logo">
+        <h2>Compare your Shopping with Panda's Price</h2>
+        <div id="uploadSection">
+            <label for="fileInput" class="btn btn-primary">Choose Bill</label>
+            <input type="file" id="fileInput" accept="image/*">
+            <!-- Add loading spinner element -->
+            <div class="spinner-border text-primary" role="status" id="loadingSpinner">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <button onclick="uploadImage()">Upload</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'inline-block';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = ''; // Clear previous results
+
+                // Display finalsheet as a table
+                resultDiv.innerHTML += '<div class="result-item"><h2>Price Difference Table:</h2><div class="table-responsive">' + data.finalsheet + '</div></div>';
+
+                // Display total loss
+                resultDiv.innerHTML += '<div class="result-item"><h2>Total Loss:</h2><p class="total-loss">' + data.total_loss + '</p></div>';
+
+                // Hide loading spinner on success
+                document.getElementById('loadingSpinner').style.display = 'none';
+
+                // Add animation to results
+                const resultItems = document.querySelectorAll('.result-item');
+                resultItems.forEach(item => item.classList.add('show'));
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Hide loading spinner on error
+                document.getElementById('loadingSpinner').style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
