@@ -48,9 +48,11 @@ def upload():
         data['total_amount'].append(item['total_amount'])
         data['unit_price'].append(item['unit_price'])
     df = pd.DataFrame(data)
-    print(df)
+    df.to_csv('output1.csv', index=False, columns=['description', 'unit_price'])
+
 
     finalsheet,total=find_price_difference(df,"output.csv")
+    print(finalsheet)
     table_html = finalsheet.to_html(index=False, classes='table table-bordered table-hover')
 
     return jsonify({'result': {}, 'finalsheet': table_html, 'total_loss': total})
